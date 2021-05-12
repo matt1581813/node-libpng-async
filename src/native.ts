@@ -14,6 +14,6 @@ export const {
     __native_isPng,
     __native_resize,
     __native_copy,
-    __native_asnyc_encode,
+    __native_encode_async,
     __native_fill,
 } = require(qualifiedName); // tslint:disable-line

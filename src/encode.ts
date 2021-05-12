@@ -1,5 +1,5 @@
 import { writeFile, writeFileSync } from "fs";
-import { __native_encode,__native_asnyc_encode} from "./native";
+import { __native_encode,__native_encode_async} from "./native";
 
 
 
@@ -46,14 +46,14 @@ export function asyncEncode(buffer: Buffer, options: EncodeOptions): Promise<Buf
 
     let promise = new Promise<Buffer>((resolve, reject) => {
         try {
-            __native_asnyc_encode(buffer, width, height, alpha, compressionLevel, (png:Buffer) => {
+            __native_encode_async(buffer, width, height, alpha, compressionLevel, (png:Buffer) => {
                 resolve(png);
             });
         }catch(e){
             reject(e);
         }
     });
-    
+
     return promise;
 }
 
