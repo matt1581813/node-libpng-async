@@ -9,7 +9,7 @@
     "pngjs",
     "node-libpng-async"
   ],
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "libpng with async.",
   "main": "dist/index.js",
   "author": "zhang matt",
@@ -31,13 +31,9 @@
   },
   "files": [
     "index.d.ts",
-    "./dist",
-    "./docs",
-    "./images",
-    "./scripts",
-    "./src",
-    "./LICENSE",
-    "./README.md"
+    "/dist",
+    "/scripts",
+    "/LICENSE"
   ],
   "jest": {
     "coverageThreshold": {
