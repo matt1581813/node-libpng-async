@@ -17,7 +17,7 @@ public:
 			     uint8_t *input,
 		         uint32_t width,
 				 uint32_t height,
-				 boolean alpha,
+				 bool alpha,
 			     uint32_t compression)
 		: Nan::AsyncWorker(callback), 
 		        async_lock(new uv_mutex_t),
@@ -109,7 +109,7 @@ private:
 	uint8_t *input;
 	uint32_t width;
 	uint32_t height;
-	boolean alpha;
+	bool alpha;
 	uint32_t compression;
 	vector<uint8_t> encoded;
 };
