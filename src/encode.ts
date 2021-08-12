@@ -2,6 +2,11 @@ import { writeFile, writeFileSync } from "fs";
 import { __native_encode,__native_encode_async} from "./native";
 
 
+export enum InputFormat {
+    'RGBA' = 0,
+    'ARGB' = 1
+}
+
 
 export interface EncodeOptions {
     /**
@@ -16,6 +21,9 @@ export interface EncodeOptions {
      * level of compression to use 0 - no compression, 1 - fastest, 9 - best size.
      */
     compressionLevel?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+	
+	
+	format?:InputFormat
 }
 
 export function asyncEncode(buffer: Buffer, options: EncodeOptions): Promise<Buffer>{
@@ -25,7 +33,7 @@ export function asyncEncode(buffer: Buffer, options: EncodeOptions): Promise<Buf
     if (typeof options !== "object" || options === null) {
         throw new Error("Options need to be an object.");
     }
-    let { width, height, compressionLevel = 9 } = options;
+    let { width, height, compressionLevel = 9, format = InputFormat.RGBA} = options;
     if (typeof width !== "number" || typeof height !== "number") {
         throw new Error("Error encoding PNG. Width and height need to be specified.");
     }
@@ -38,6 +46,10 @@ export function asyncEncode(buffer: Buffer, options: EncodeOptions): Promise<Buf
     if (!Number.isInteger(compressionLevel) || compressionLevel < 0 || compressionLevel > 9) {
         throw new Error("Error encoding PNG. CompressionLevel needs to be an integer between 0 and 9.");
     }
+	if(format != InputFormat.RGBA && format != InputFormat.ARGB){
+		throw new Error("Error encoding PNG. Format needs to be ARGB or RGBA");
+	}
+	
     const bytesPerPixel = buffer.length / (width * height);
     if (bytesPerPixel !== 3 && bytesPerPixel !== 4) {
         throw new Error("Error encoding PNG. Unsupported color type.");
@@ -46,7 +58,7 @@ export function asyncEncode(buffer: Buffer, options: EncodeOptions): Promise<Buf
 
     let promise = new Promise<Buffer>((resolve, reject) => {
         try {
-            __native_encode_async(buffer, width, height, alpha, compressionLevel, (png:Buffer) => {
+            __native_encode_async(buffer, width, height, alpha, compressionLevel,format, (png:Buffer) => {
                 resolve(png);
             });
         }catch(e){
@@ -81,7 +93,7 @@ export function encode(buffer: Buffer, options: EncodeOptions): Buffer {
     if (typeof options !== "object" || options === null) {
         throw new Error("Options need to be an object.");
     }
-    let { width, height, compressionLevel = 9 } = options;
+    let { width, height, compressionLevel = 9 , format = InputFormat.RGBA} = options;
     if (typeof width !== "number" || typeof height !== "number") {
         throw new Error("Error encoding PNG. Width and height need to be specified.");
     }
@@ -94,12 +106,15 @@ export function encode(buffer: Buffer, options: EncodeOptions): Buffer {
     if (!Number.isInteger(compressionLevel) || compressionLevel < 0 || compressionLevel > 9) {
         throw new Error("Error encoding PNG. CompressionLevel needs to be an integer between 0 and 9.");
     }
+	if(format != InputFormat.RGBA && format != InputFormat.ARGB){
+		throw new Error("Error encoding PNG. Format needs to be ARGB or RGBA");
+	}
     const bytesPerPixel = buffer.length / (width * height);
     if (bytesPerPixel !== 3 && bytesPerPixel !== 4) {
         throw new Error("Error encoding PNG. Unsupported color type.");
     }
     const alpha = bytesPerPixel === 4;
-    return __native_encode(buffer, width, height, alpha, compressionLevel);
+    return __native_encode(buffer, width, height, alpha, compressionLevel,format);
 }
 
 export type WritePngFileCallback = (error: Error) => void;

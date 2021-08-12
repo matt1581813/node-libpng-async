@@ -3,6 +3,7 @@
 #include <zlib.h>
 #include <node_buffer.h>
 #include <iostream>
+#include "encode.hpp"
 
 #include <nan.h>
 
@@ -18,14 +19,16 @@ public:
 		         uint32_t width,
 				 uint32_t height,
 				 bool alpha,
-			     uint32_t compression)
+			     uint32_t compression,
+		         uint32_t input_type)
 		: Nan::AsyncWorker(callback), 
 		        async_lock(new uv_mutex_t),
 		        input(input), 
 		        width(width),
 			    height(height),
 		        alpha(alpha),
-				compression(compression)
+				compression(compression),
+				input_type(input_type)
 	{}
 
 	~EncodeWorker() {
@@ -34,8 +37,16 @@ public:
 	}
 
 	void Execute() {
+
+		try {
+			encoded = encode_png(input, width, height, alpha, compression, input_type);
+		}
+		catch (const char* msg) {
+			Nan::ThrowTypeError(msg);
+		}
+
 	//	uv_mutex_lock(async_lock);
-		const auto colorType = alpha ? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB;
+		/*const auto colorType = alpha ? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB;
 		const auto rowBytes = (alpha ? 4 : 3) * width;
 		// Create libpng write struct. Fail if unable to create.
 		auto errorHandler = [](png_structp pngPtr, png_const_charp message) {
@@ -84,7 +95,7 @@ public:
 		// Free libpng write struct.
 		png_free_data(pngPtr, infoPtr, PNG_FREE_ALL, -1);
 		png_destroy_write_struct(&pngPtr, &infoPtr);
-	//	uv_mutex_unlock(async_lock);
+	//	uv_mutex_unlock(async_lock);*/
 
 	}
 
@@ -111,6 +122,7 @@ private:
 	uint32_t height;
 	bool alpha;
 	uint32_t compression;
+	uint32_t input_type;
 	vector<uint8_t> encoded;
 };
 
@@ -127,8 +139,10 @@ NAN_METHOD(encodeAsync) {
 	// 5th Parameter: Compression level, default to best compression
 	uint32_t compression = static_cast<uint32_t>(Nan::To<uint32_t>(info[4]).FromMaybe(Z_BEST_COMPRESSION));
 
+	uint32_t input_type = static_cast<uint32_t>(Nan::To<uint32_t>(info[5]).FromMaybe(INPUT_DATA_RGBA));
+
 	Nan::Callback* callback = new Nan::Callback(
-		v8::Local<v8::Function>::Cast(info[5])
+		v8::Local<v8::Function>::Cast(info[6])
 	);
 
 	EncodeWorker* worker = new EncodeWorker(
@@ -137,7 +151,8 @@ NAN_METHOD(encodeAsync) {
 		width,
 		height,
 		alpha,
-		compression
+		compression,
+		input_type
 	);
 
 	Nan::AsyncQueueWorker(worker);

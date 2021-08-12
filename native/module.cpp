@@ -19,4 +19,4 @@ NAN_MODULE_INIT(InitNodeLibPng) {
 	InitAsyncEncode(target);
 }
 
-NODE_MODULE(node_libpng, InitNodeLibPng)
+NAN_MODULE_WORKER_ENABLED(node_libpng, InitNodeLibPng)
