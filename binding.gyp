@@ -5,11 +5,15 @@
             "dependencies" : [
                 "./deps/libpng.gyp:libpng"
             ],
+            
+            "cflags_cc!": [ '-fno-exceptions' ],
             "cflags" : [
                 "-Wall",
                 "-Wno-unused-parameter",
                 "-Wno-missing-field-initializers",
-                "-Wextra"
+                "-Wextra",
+                "-fexceptions"
+
             ],
             "include_dirs": [
                 "<!(node -e \"require('nan')\")",

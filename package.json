@@ -9,7 +9,7 @@
     "pngjs",
     "node-libpng-async"
   ],
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "libpng with async.",
   "main": "dist/index.js",
   "author": "zhang matt",
@@ -30,6 +30,8 @@
     "url": "https://github.com/matt1581813/node-libpng-async"
   },
   "files": [
+	"/deps",
+	"binding.gyp",
     "index.d.ts",
     "/dist",
     "/scripts",
